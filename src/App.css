@@ -39,8 +39,6 @@ body {
   height: 100%;
 }
 
-/* --- REUSABLE COMPONENTS --- */
-
 .navbar-top {
   background: var(--white);
   height: 60px;
@@ -105,7 +103,6 @@ body {
 }
 .btn-logout-mini:hover { background: #fef2f2; }
 
-/* Buttons */
 .btn-primary {
   background: var(--primary);
   color: white;
@@ -135,6 +132,14 @@ body {
   display: block; 
   font-weight: normal; 
 }
+
+.action-buttons { display: flex; gap: 8px; justify-content: center; }
+.btn-action { 
+  width: 55px; height: 40px; border-radius: 8px; cursor: pointer; 
+  display: grid; place-items: center; transition: 0.2s; border: 1px solid transparent; 
+}
+
+.btn-action .material-symbols-outlined { font-size: 18px; line-height: 1; display: block; font-weight: normal; }
 
 /* Status Pill */
 .status-pill {
@@ -176,9 +181,52 @@ body {
 
 /* Scrollbar Utility */
 .hide-scrollbar {
-  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.filter-bar {
+  background: var(--white); padding: 1rem; border-radius: 12px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  display: flex; gap: 1rem; align-items: center; flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1; padding: 10px 16px; border-radius: 8px;
+  border: 1px solid var(--border); outline: none; transition: 0.2s;
+  font-family: inherit; font-size: 0.9rem;
+  background-color: var(--white); color: var(--text-dark);
+}
+.search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+
+.filter-select {
+  padding: 0 16px; height: 40px; border-radius: 8px;
+  border: 1px solid var(--border); outline: none;
+  background-color: var(--white); color: var(--text-dark);
+  font-family: inherit; font-size: 0.9rem; font-weight: 500; cursor: pointer;
+}
+.filter-select:focus { border-color: var(--primary); }
+
+.table-card {
+  background: var(--white); border-radius: 12px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  overflow: hidden; flex-shrink: 0;
+}
+.data-table { width: 100%; border-collapse: collapse; text-align: left; }
+.data-table th {
+  background: #f8fafc; padding: 1rem 1.5rem;
+  font-size: 0.75rem; font-weight: 700; color: var(--text-gray);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.data-table td {
+  padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+  font-size: 0.9rem; color: var(--text-dark); vertical-align: middle;
+  text-align: center;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #fdfdfd; }
+.data-table td:first-child {text-align: left;}

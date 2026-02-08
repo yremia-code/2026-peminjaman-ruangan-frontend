@@ -20,7 +20,7 @@ export interface Peminjaman{
     user?: User;
     ruanganId: number;
     ruangan?: Ruangan;
-    tanggalMulai: string;
+    tanggalPinjam: string;
     tanggalSelesai: string;
     status: 'Pending' | 'Approved' | 'Rejected';
 }

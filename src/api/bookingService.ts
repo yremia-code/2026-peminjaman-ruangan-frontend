@@ -21,6 +21,16 @@ export const bookingService = {
         await api.put(`/peminjaman/${id}`, data);
     },
 
+    updateStatus: async (id: number, status: string): Promise<void> => {
+        const response = await api.put(
+            `/peminjaman/${id}/status`, 
+            JSON.stringify(status),
+        {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.data;
+    },
+
     delete: async (id: number): Promise<void> => {
         await api.delete(`/peminjaman/${id}`);
     }

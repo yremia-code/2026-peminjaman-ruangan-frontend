@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import RoomsPage from './pages/Admin/RoomsPage';
+import BookingsPage from './pages/Admin/BookingsPage';
 import ProtectedRoute from './components/ProtectedRoute'; 
 import './App.css';
 
@@ -19,6 +20,7 @@ function App() {
 
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path='/admin/rooms' element={<RoomsPage />} />
+          <Route path='/admin/bookings' element={<BookingsPage />} />
         </Route>
         <Route path="*" element={<p>Halaman tidak ditemukan</p>} />
       </Routes>
