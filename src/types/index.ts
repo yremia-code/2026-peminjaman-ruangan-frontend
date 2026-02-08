@@ -24,3 +24,13 @@ export interface Peminjaman{
     tanggalSelesai: string;
     status: 'Pending' | 'Approved' | 'Rejected';
 }
+
+export interface LoginDTO {
+    email: string;
+    password: string;
+}
+
+export interface AuthResponse {
+    token: string;
+    user: User;
+}
