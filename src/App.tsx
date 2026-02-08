@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, href } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/Admin/AdminDashboard';
+import RoomsPage from './pages/Admin/RoomsPage';
 import ProtectedRoute from './components/ProtectedRoute'; 
 import './App.css';
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path='/admin/rooms' element={<RoomsPage />} />
         </Route>
         <Route path="*" element={<p>Halaman tidak ditemukan</p>} />
       </Routes>

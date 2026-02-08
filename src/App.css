@@ -41,22 +41,99 @@ body {
 
 /* --- REUSABLE COMPONENTS --- */
 
+.navbar-top {
+  background: var(--white);
+  height: 60px;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.navbar-left, .right-nav, .nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-left { gap: 2.5rem; }
+.right-nav { gap: 15px; }
+.nav-links { gap: 1.5rem; }
+
+.brand-spr {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: var(--text-gray);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-item:hover { color: var(--primary); }
+
+.admin-profile-pill {
+  background: var(--primary-soft);
+  padding: 4px 8px 4px 12px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #93c5fd;
+  cursor: default;
+}
+
+.profile-text { text-align: right; line-height: 1; }
+.name { font-weight: 700; font-size: 0.75rem; color: var(--primary-dark); }
+.role { color: var(--text-gray); font-size: 0.65rem; }
+.avatar-circle { width: 28px; height: 28px; background: var(--primary); border-radius: 50%; }
+
+.btn-logout-mini {
+  background: none; border: none; font-size: 1.1rem; cursor: pointer;
+  color: var(--danger); padding: 4px; border-radius: 6px; transition: 0.2s;
+  display: grid; place-items: center;
+}
+.btn-logout-mini:hover { background: #fef2f2; }
+
 /* Buttons */
 .btn-primary {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.8rem;
   cursor: pointer;
   transition: 0.2s;
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px; 
+  line-height: 1; 
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
+}
+
+
+.btn-primary .material-symbols-outlined {
+  font-size: 18px; 
+  line-height: 1;  
+  display: block; 
+  font-weight: normal; 
 }
 
 /* Status Pill */
