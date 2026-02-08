@@ -1,42 +1,107 @@
+/* src/App.css */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+:root {
+  /* Colors */
+  --primary: #1c4d8d;
+  --primary-dark: #0f2854;
+  --primary-soft: #dbeafe;
+  --bg-main: #f1f5f9;
+  --white: #ffffff;
+  --text-dark: #0f2854;
+  --text-gray: #64748b;
+  --border: #cbd5e1;
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  --danger: #ef4444;
+  --success: #047857;
+  --success-bg: #ecfdf5;
+  --warning: #ea580c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: var(--text-dark);
+  font-size: 13px;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  height: 100%;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* --- REUSABLE COMPONENTS --- */
+
+/* Buttons */
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Status Pill */
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid transparent;
 }
 
-.card {
-  padding: 2em;
+.status-online {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: #a7f3d0;
 }
 
-.read-the-docs {
-  color: #888;
+.dot-indicator {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+/* Skeleton Animation */
+@keyframes shimmer {
+  0% { background-color: #e2e8f0; }
+  50% { background-color: #f1f5f9; }
+  100% { background-color: #e2e8f0; }
+}
+
+.skeleton {
+  animation: shimmer 1.5s infinite ease-in-out;
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+/* Scrollbar Utility */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
