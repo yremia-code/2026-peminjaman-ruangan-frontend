@@ -2,19 +2,20 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { userService } from "../../api/userService";
 import type { User } from "../../types";
+import UserModal from "../../components/UserModal";
 import "./UsersPage.css";
 
 const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [adminData, setAdminData] = useState({
-    nama: "Admin",
-    role: "Petugas Lab",
-  });
+  const [adminData, setAdminData] = useState({ nama: "Admin", role: "Petugas Lab" });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const navigate = useNavigate();
 
@@ -27,11 +28,8 @@ const UsersPage = () => {
           nama: parsed.nama || "Admin",
           role: parsed.role || "Petugas Lab",
         });
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
     }
-
     fetchUsers();
   }, []);
 
@@ -54,38 +52,56 @@ const UsersPage = () => {
 
     if (searchTerm) {
       const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (u) =>
-          u.nama.toLowerCase().includes(lower) ||
-          u.email.toLowerCase().includes(lower),
+      result = result.filter(u =>
+        u.nama.toLowerCase().includes(lower) ||
+        u.email.toLowerCase().includes(lower)
       );
     }
 
     if (roleFilter) {
-      result = result.filter((u) => u.role === roleFilter);
+      result = result.filter(u => u.role === roleFilter);
     }
 
     setFilteredUsers(result);
   }, [users, searchTerm, roleFilter]);
 
+  const handleOpenAdd = () => {
+    setEditingUser(null);
+    setIsModalOpen(true);
+  };
+
   const handleEdit = (id: number) => {
-    //navigate(`/admin/users/edit/${id}`);
-    alert("Fitur edit user belum tersedia.");
+    const userToEdit = users.find(u => u.id === id);
+    if (userToEdit) {
+      setEditingUser(userToEdit);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleSave = async (formData: any) => {
+    try {
+      if (editingUser) {
+        await userService.update(editingUser.id, formData);
+        alert("User berhasil diupdate! ✅");
+      } else {
+        await userService.create(formData);
+        alert("User baru berhasil ditambahkan! 🎉");
+      }
+      fetchUsers();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menyimpan data user ❌. Pastikan password min 6 karakter.");
+    }
   };
 
   const handleDelete = async (id: number, nama: string) => {
-    if (
-      !window.confirm(
-        `Yakin ingin menghapus user "${nama}"? Data tidak bisa dikembalikan.`,
-      )
-    )
-      return;
+    if (!window.confirm(`Yakin ingin menghapus user "${nama}"?`)) return;
 
     try {
       await userService.delete(id);
-      const updated = users.filter((u) => u.id !== id);
-      setUsers(updated);
       alert("User berhasil dihapus!");
+      fetchUsers();
     } catch (error) {
       console.error(error);
       alert("Gagal menghapus user. Cek backend.");
@@ -103,21 +119,14 @@ const UsersPage = () => {
         <div className="navbar-left">
           <div className="brand-spr">SPR ADMIN</div>
           <div className="nav-links">
-            <Link to="/admin/bookings" className="nav-item">
-              📅 Bookings
-            </Link>
-            <Link to="/admin/rooms" className="nav-item">
-              🏢 Rooms
-            </Link>
-            <Link to="/admin/users" className="nav-item">
-              👥 Users
-            </Link>
+            <Link to="/admin" className="nav-item">🏠 Dashboard</Link>
+            <Link to="/admin/bookings" className="nav-item">📅 Bookings</Link>
+            <Link to="/admin/rooms" className="nav-item">🏢 Rooms</Link>
+            <Link to="/admin/users" className="nav-item active">👥 Users</Link>
           </div>
         </div>
         <div className="right-nav">
-          <div className="status-pill status-online">
-            <div className="dot-indicator"></div> Online
-          </div>
+          <div className="status-pill status-online"><div className="dot-indicator"></div> Online</div>
           <div className="admin-profile-pill">
             <div className="profile-text">
               <div className="name">{adminData.nama}</div>
@@ -125,27 +134,24 @@ const UsersPage = () => {
             </div>
             <div className="avatar-circle"></div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="btn-logout-mini"
-            title="Logout"
-          >
-            🚪
-          </button>
+          <button onClick={handleLogout} className="btn-logout-mini">🚪</button>
         </div>
       </nav>
 
       <main className="users-content">
+
         <div className="page-header">
           <div>
             <h1>Manajemen Pengguna</h1>
             <p>Daftar semua pengguna terdaftar di sistem.</p>
           </div>
 
-          <button className="btn-primary" onClick={fetchUsers}>
-            <span className="material-symbols-outlined">refresh</span>
-            Refresh
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn-primary" onClick={handleOpenAdd}>
+              <span className="material-symbols-outlined">person_add</span>
+              Tambah User
+            </button>
+          </div>
         </div>
 
         <div className="filter-bar">
@@ -161,12 +167,10 @@ const UsersPage = () => {
             className="filter-select"
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            title="Filter berdasarkan role"
-            aria-label="Filter pengguna berdasarkan role"
           >
             <option value="">Semua Role</option>
             <option value="Admin">Admin</option>
-            <option value="User">User</option>
+            <option value="Mahasiwa">Mahasiswa</option>
           </select>
         </div>
 
@@ -194,52 +198,27 @@ const UsersPage = () => {
                           </div>
                           <div>
                             <div className="user-name-primary">{user.nama}</div>
-                            <div className="user-email-secondary">
-                              {user.email}
-                            </div>
+                            <div className="user-email-secondary">{user.email}</div>
                           </div>
                         </div>
                       </td>
-
                       <td>
-                        <span
-                          className={`role-badge ${user.role === "Admin" ? "role-admin" : "role-user"}`}
-                        >
-                          {user.role === "Admin" ? "🛡️ Admin" : "👤 User"}
+                        <span className={`role-badge ${user.role === "Admin" ? "role-admin" : "role-user"}`}>
+                          {user.role === "Admin" ? "🛡️ Admin" : "👤 Mahasiswa"}
                         </span>
                       </td>
-
                       <td>
-                        <span
-                          style={{
-                            color: "#16a34a",
-                            fontWeight: 600,
-                            fontSize: "0.85rem",
-                          }}
-                        >
+                        <span style={{ color: "#16a34a", fontWeight: 600, fontSize: "0.85rem" }}>
                           ● Aktif
                         </span>
                       </td>
-
                       <td>
                         <div className="action-buttons">
-                          <button
-                            className="btn-action btn-edit"
-                            title="Edit User"
-                            onClick={() => handleEdit(user.id)}
-                          >
-                            <span className="material-symbols-outlined">
-                              edit
-                            </span>
+                          <button className="btn-action btn-edit" onClick={() => handleEdit(user.id)} title="Edit">
+                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>edit</span>
                           </button>
-                          <button
-                            className="btn-action btn-delete"
-                            title="Hapus User"
-                            onClick={() => handleDelete(user.id, user.nama)}
-                          >
-                            <span className="material-symbols-outlined">
-                              delete
-                            </span>
+                          <button className="btn-action btn-delete" onClick={() => handleDelete(user.id, user.nama)} title="Hapus">
+                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
                           </button>
                         </div>
                       </td>
@@ -247,13 +226,8 @@ const UsersPage = () => {
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan={4}
-                      style={{ textAlign: "center", padding: "3rem" }}
-                    >
-                      <div style={{ color: "#64748b" }}>
-                        Tidak ada user ditemukan.
-                      </div>
+                    <td colSpan={4} style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
+                      Tidak ada user ditemukan.
                     </td>
                   </tr>
                 )}
@@ -262,6 +236,13 @@ const UsersPage = () => {
           </div>
         )}
       </main>
+
+      <UserModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSave}
+        initialData={editingUser}
+      />
     </div>
   );
 };

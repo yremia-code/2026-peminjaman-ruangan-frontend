@@ -5,6 +5,7 @@ import { userService } from "../../api/userService";
 import { bookingService } from "../../api/bookingService";
 import type { Ruangan, User, Peminjaman } from "../../types";
 import RoomModal from "../../components/RoomModal"; 
+import UserModal from "../../components/UserModal";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
@@ -17,6 +18,7 @@ const AdminDashboard = () => {
     const [adminData, setAdminData] = useState({ nama: "Admin", role: "Petugas Lab" });
 
     const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     
     const navigate = useNavigate();
 
@@ -83,7 +85,7 @@ const AdminDashboard = () => {
     };
 
     const handleAddUser = () => {
-        alert("Fitur Tambah User Segera Hadir! 🚧");
+        setIsUserModalOpen(true);
     };
 
     const handleRoomSaved = async (formData: any) => {
@@ -96,6 +98,17 @@ const AdminDashboard = () => {
             alert("Gagal menambah ruangan.");
         }
     };
+
+    const handleUserSaved = async (formData: any) => {
+        try {
+            await userService.create(formData);
+            alert("User berhasil ditambahkan! 🎉")
+            setIsUserModalOpen(false);
+            fetchData(true);
+        } catch (error) {
+            alert("Gagal menambah user.")
+        }
+    }
 
     if (loading && room.length === 0) return <div className="admin-wrapper">Loading Dashboard...</div>;
     if (error) return <div className="admin-wrapper">{error}</div>;
@@ -222,6 +235,13 @@ const AdminDashboard = () => {
                 onClose={() => setIsRoomModalOpen(false)}
                 onSubmit={handleRoomSaved}
                 initialData={null} 
+            />
+
+            <UserModal
+                isOpen={isUserModalOpen}
+                onClose={() => setIsUserModalOpen(false)}
+                onSubmit={handleUserSaved}
+                initialData={null}
             />
         </div>
     );

@@ -13,12 +13,12 @@ export const userService = {
     },
 
     create: async (data: Omit<User, 'id' | 'isDeleted'>): Promise<User> => {
-        const response = await api.post<User>('/user', { data });
+        const response = await api.post<User>('/user',  data );
         return response.data;
     },
 
     update: async (id: number, data: Partial<User>): Promise<void> => {
-        await api.put(`/user/${id}`, { data });
+        await api.put(`/user/${id}`, {id, ...data} );
     },
 
     delete: async (id: number): Promise<void> => {
