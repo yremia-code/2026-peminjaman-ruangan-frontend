@@ -4,6 +4,7 @@ import { roomService } from "../../api/roomService";
 import { userService } from "../../api/userService";
 import { bookingService } from "../../api/bookingService";
 import type { Ruangan, User, Peminjaman } from "../../types";
+import RoomModal from "../../components/RoomModal"; 
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
@@ -14,10 +15,11 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [adminData, setAdminData] = useState({ nama: "Admin", role: "Petugas Lab" });
+
+    const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
     
     const navigate = useNavigate();
 
-    // 1. FUNGSI FETCH DATA
     const fetchData = useCallback(async (isBackground = false) => {
         if (!isBackground) setLoading(true);
         setError(null);
@@ -52,15 +54,10 @@ const AdminDashboard = () => {
 
         fetchData();
 
-        // 2. AUTO REFRESH TIAP 30 DETIK
-        const intervalId = setInterval(() => {
-            fetchData(true); 
-        }, 30000); 
-
+        const intervalId = setInterval(() => { fetchData(true); }, 30000); 
         return () => clearInterval(intervalId); 
     }, [fetchData]);
 
-    // Data Processing
     const groupedRooms = room.reduce((acc, room) => {
         const gedung = room.gedung || "Gedung Lain";
         if (!acc[gedung]) acc[gedung] = [];
@@ -77,65 +74,46 @@ const AdminDashboard = () => {
         navigate('/');
     };
 
-    // A. LOADING SKELETON
-    if (loading && room.length === 0) {
-        return (
-            <div className="admin-wrapper">
-                <nav className="navbar-top">
-                    <div className="brand-spr">SPR ADMIN</div>
-                </nav>
-                <main className="dashboard-content">
-                    <div className="skeleton" style={{height: 50, width: '40%', marginBottom: 15}}></div>
-                    
-                    <div className="stats-container">
-                        {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{height: 80}}></div>)}
-                    </div>
-                    
-                    <div className="section-wrapper">
-                        <div className="skeleton" style={{height: 20, width: '20%', marginBottom: 10}}></div>
-                        <div className="horizontal-scroll-area hide-scrollbar">
-                            {[1, 2, 3, 4].map(i => <div key={i} className="skeleton" style={{minWidth: 220, height: '100%'}}></div>)}
-                        </div>
-                    </div>
-                </main>
-            </div>
-        );
-    }
+    const handleAddRoom = () => {
+        setIsRoomModalOpen(true); 
+    };
 
-    // B. ERROR STATE
-    if (error) {
-        return (
-            <div className="admin-wrapper">
-                <nav className="navbar-top">
-                    <div className="brand-spr">SPR ADMIN</div>
-                </nav>
-                <div className="error-container">
-                    <div className="error-icon">⚠️</div>
-                    <h3>Oops, Terjadi Kesalahan</h3>
-                    <p>{error}</p>
-                    <button className="btn-retry" onClick={() => fetchData()}>Coba Lagi</button>
-                </div>
-            </div>
-        );
-    }
+    const handleAddBooking = () => {
+        alert("Fitur Tambah Booking Segera Hadir! 🚧");
+    };
 
-    // C. DASHBOARD UTAMA
+    const handleAddUser = () => {
+        alert("Fitur Tambah User Segera Hadir! 🚧");
+    };
+
+    const handleRoomSaved = async (formData: any) => {
+        try {
+            await roomService.create(formData);
+            alert("Ruangan berhasil ditambahkan! 🎉");
+            setIsRoomModalOpen(false);
+            fetchData(true);
+        } catch (error) {
+            alert("Gagal menambah ruangan.");
+        }
+    };
+
+    if (loading && room.length === 0) return <div className="admin-wrapper">Loading Dashboard...</div>;
+    if (error) return <div className="admin-wrapper">{error}</div>;
+
     return (
         <div className="admin-wrapper">
             <nav className="navbar-top">
                 <div className="navbar-left">
                     <div className="brand-spr">SPR ADMIN</div>
                     <div className="nav-links">
+                        <Link to="/admin" className="nav-item">🏠 Dashboard</Link>
                         <Link to="/admin/bookings" className="nav-item">📅 Bookings</Link>
-                        <Link to="/admin/rooms" className="nav-item">🏢 Rooms</Link>
+                        <Link to="/admin/rooms" className="nav-item active">🏢 Rooms</Link>
                         <Link to="/admin/users" className="nav-item">👥 Users</Link>
                     </div>
                 </div>
                 <div className="right-nav">
-                    {/* Menggunakan status-pill universal dari App.css */}
-                    <div className="status-pill status-online">
-                        <div className="dot-indicator"></div> Online
-                    </div>
+                    <div className="status-pill status-online"><div className="dot-indicator"></div> Online</div>
                     <div className="admin-profile-pill">
                         <div className="profile-text">
                             <div className="name">{adminData.nama}</div>
@@ -143,7 +121,7 @@ const AdminDashboard = () => {
                         </div>
                         <div className="avatar-circle"></div>
                     </div>
-                    <button onClick={handleLogout} className="btn-logout-mini" title="Logout">🚪</button>
+                    <button onClick={handleLogout} className="btn-logout-mini">🚪</button>
                 </div>
             </nav>
 
@@ -153,8 +131,18 @@ const AdminDashboard = () => {
                         <h1 className="page-title">Overview</h1>
                         <p className="page-subtitle">Selamat datang kembali, {adminData.nama}.</p>
                     </div>
-                    {/* Menggunakan btn-primary universal dari App.css */}
-                    <button className="btn-primary">+ Booking</button>
+                    
+                    <div style={{display: 'flex', gap: '10px'}}>
+                        <button className="btn-primary" onClick={handleAddBooking} style={{background: '#3b82f6'}}>
+                            + Booking
+                        </button>
+                        <button className="btn-primary" onClick={handleAddUser} style={{background: '#8b5cf6'}}>
+                            + User
+                        </button>
+                        <button className="btn-primary" onClick={handleAddRoom} style={{background: '#10b981'}}>
+                            + Ruangan
+                        </button>
+                    </div>
                 </header>
 
                 <section className="stats-container">
@@ -184,29 +172,26 @@ const AdminDashboard = () => {
                 <section className="section-wrapper">
                     <div className="section-header">
                         <h3 className="section-title">Gedung & Fasilitas</h3>
-                        <Link to="/admin/rooms" className="see-all-btn">Lihat Semua <span className="arrow-small">➔</span></Link>
+                        <Link to="/admin/rooms" className="see-all-btn">Lihat Detail <span className="arrow-small">➔</span></Link>
                     </div>
-                    {/* Menambahkan hide-scrollbar untuk kerapihan */}
                     <div className="horizontal-scroll-area hide-scrollbar">
-                        {Object.keys(groupedRooms).length === 0 ? (
-                            <div className="empty-state-box">
-                                <div className="empty-icon">🏢</div>
-                                <div>Belum ada data gedung</div>
-                            </div>
-                        ) : (
-                            Object.entries(groupedRooms).map(([gedungName, roomsInGedung]) => (
-                                <div key={gedungName} className="summary-card">
-                                    <div className="card-top">
-                                        <div className="icon-box icon-gray">🏢</div>
-                                        <div className="card-arrow">➔</div>
-                                    </div>
-                                    <div className="card-bottom">
-                                        <h4 className="card-title">{gedungName}</h4>
-                                        <p className="card-desc">{roomsInGedung.length} Ruangan</p>
-                                    </div>
+                        {Object.entries(groupedRooms).map(([gedungName, roomsInGedung]) => (
+                            <div 
+                                key={gedungName} 
+                                className="summary-card"
+                                style={{cursor: 'pointer'}}
+                                onClick={() => navigate(`/admin/rooms?gedung=${encodeURIComponent(gedungName)}`)}
+                            >
+                                <div className="card-top">
+                                    <div className="icon-box icon-gray">🏢</div>
+                                    <div className="card-arrow">➔</div>
                                 </div>
-                            ))
-                        )}
+                                <div className="card-bottom">
+                                    <h4 className="card-title">{gedungName}</h4>
+                                    <p className="card-desc">{roomsInGedung.length} Ruangan</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </section>
 
@@ -231,6 +216,13 @@ const AdminDashboard = () => {
                     </div>
                 </section>
             </main>
+
+            <RoomModal 
+                isOpen={isRoomModalOpen}
+                onClose={() => setIsRoomModalOpen(false)}
+                onSubmit={handleRoomSaved}
+                initialData={null} 
+            />
         </div>
     );
 };

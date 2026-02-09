@@ -2,23 +2,24 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { roomService } from "../../api/roomService";
 import type { Ruangan } from "../../types";
+import RoomModal from "../../components/RoomModal"; 
 import "./RoomsPage.css";
 
 const RoomsPage = () => {
-    // Data State
     const [rooms, setRooms] = useState<Ruangan[]>([]);
     const [filteredRooms, setFilteredRooms] = useState<Ruangan[]>([]);
     const [loading, setLoading] = useState(true);
     const [adminData, setAdminData] = useState({ nama: "Admin", role: "Petugas Lab" });
 
-    // Filter State
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedGedung, setSelectedGedung] = useState("");
     
-    const [searchParams] = useSearchParams();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingRoom, setEditingRoom] = useState<Ruangan | null>(null);
+
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    // 1. Fetch Data
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -31,33 +32,30 @@ const RoomsPage = () => {
             } catch (e) { console.error(e); }
         }
 
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const data = await roomService.getAll();
-                
-                setRooms(data);
-                setFilteredRooms(data);
-            } catch (error) {
-                console.error("Gagal ambil data ruangan", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
     }, []);
 
-    // 2. Filter Logic
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const data = await roomService.getAll();
+            setRooms(data);
+            setFilteredRooms(data);
+        } catch (error) {
+            console.error("Gagal ambil data ruangan", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const queryParam = searchParams.get("search");
-    
-        if (!searchTerm && queryParam) {
-            setSearchTerm(queryParam);
+        const gedungParam = searchParams.get("gedung");
+        if (gedungParam) {
+            setSelectedGedung(gedungParam);
         }
 
         let result = rooms;
 
-        // Filter by Text
         if (searchTerm) {
             const lowerKeyword = searchTerm.toLowerCase();
             result = result.filter(r => 
@@ -66,14 +64,29 @@ const RoomsPage = () => {
             );
         }
 
-        // Filter by Dropdown
         if (selectedGedung) {
             result = result.filter(r => r.gedung === selectedGedung);
         }
 
         setFilteredRooms(result);
 
-    }, [rooms, searchParams, searchTerm, selectedGedung]);
+    }, [rooms, searchTerm, selectedGedung, searchParams]);
+
+    const handleGedungChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const val = e.target.value;
+        setSelectedGedung(val); 
+        
+        if (val) {
+            setSearchParams({ gedung: val });
+        } else {
+            setSearchParams({});
+        }
+    };
+
+    const handleResetFilter = () => {
+        setSelectedGedung("");
+        setSearchParams({});
+    };
 
     const uniqueGedung = Array.from(new Set(rooms.map(r => r.gedung))).sort();
 
@@ -82,25 +95,30 @@ const RoomsPage = () => {
         navigate('/');
     };
 
+    const handleOpenAdd = () => { setEditingRoom(null); setIsModalOpen(true); };
+    const handleOpenEdit = (room: Ruangan) => { setEditingRoom(room); setIsModalOpen(true); };
+
+    const handleSave = async (formData: Omit<Ruangan, "id" | "isDeleted">) => {
+        try {
+            if (editingRoom) {
+                await roomService.update(editingRoom.id, formData);
+                alert("Berhasil update ruangan! ✅");
+            } else {
+                await roomService.create(formData);
+                alert("Berhasil tambah ruangan! 🎉");
+            }
+            fetchData(); 
+            setIsModalOpen(false);
+        } catch (error) { alert("Gagal menyimpan data ❌"); }
+    };
 
     const handleDelete = async (id: number) => {
         if (!window.confirm("Apakah Anda yakin ingin menghapus ruangan ini?")) return;
-
         try {
             await roomService.delete(id);
-            
-            const updatedRooms = rooms.filter(r => r.id !== id);
-            setRooms(updatedRooms);
-            
             alert("Ruangan berhasil dihapus!");
-        } catch (error) {
-            console.error("Gagal menghapus:", error);
-            alert("Gagal menghapus ruangan. Pastikan backend sudah siap.");
-        }
-    };
-
-    const handleEdit = (id: number) => {
-        alert(`Fitur edit untuk ID ${id} akan segera hadir.`);
+            fetchData();
+        } catch (error) { alert("Gagal menghapus ruangan."); }
     };
 
     return (
@@ -109,15 +127,14 @@ const RoomsPage = () => {
                 <div className="navbar-left">
                     <div className="brand-spr">SPR ADMIN</div>
                     <div className="nav-links">
+                        <Link to="/admin" className="nav-item">🏠 Dashboard</Link>
                         <Link to="/admin/bookings" className="nav-item">📅 Bookings</Link>
-                        <Link to="/admin/rooms" className="nav-item">🏢 Rooms</Link>
+                        <Link to="/admin/rooms" className="nav-item active">🏢 Rooms</Link>
                         <Link to="/admin/users" className="nav-item">👥 Users</Link>
                     </div>
                 </div>
                 <div className="right-nav">
-                    <div className="status-pill status-online">
-                        <div className="dot-indicator"></div> Online
-                    </div>
+                    <div className="status-pill status-online"><div className="dot-indicator"></div> Online</div>
                     <div className="admin-profile-pill">
                         <div className="profile-text">
                             <div className="name">{adminData.nama}</div>
@@ -125,18 +142,19 @@ const RoomsPage = () => {
                         </div>
                         <div className="avatar-circle"></div>
                     </div>
-                    <button onClick={handleLogout} className="btn-logout-mini" title="Logout">🚪</button>
+                    <button onClick={handleLogout} className="btn-logout-mini">🚪</button>
                 </div>
             </nav>
 
             <main className="rooms-content">
+
                 <div className="page-header">
                     <div>
                         <h1>Manajemen Ruangan</h1>
                         <p>Daftar semua ruangan laboratorium dan kelas.</p>
                     </div>
                     
-                    <button className="btn-primary">
+                    <button className="btn-primary" onClick={handleOpenAdd}>
                         <span className="material-symbols-outlined">add</span>
                         Tambah Ruangan
                     </button>
@@ -151,18 +169,28 @@ const RoomsPage = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     
-                    <select 
-                        className="filter-select"
-                        value={selectedGedung}
-                        onChange={(e) => setSelectedGedung(e.target.value)}
-                        title="Filter berdasarkan gedung"
-                        aria-label="Filter ruangan berdasarkan gedung"
-                    >
-                        <option value="">Semua Gedung</option>
-                        {uniqueGedung.map((g, idx) => (
-                            <option key={idx} value={g}>{g}</option>
-                        ))}
-                    </select>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        <select 
+                            className="filter-select"
+                            value={selectedGedung}
+                            onChange={handleGedungChange}
+                        >
+                            <option value="">Semua Gedung</option>
+                            {uniqueGedung.map((g, idx) => (
+                                <option key={idx} value={g}>{g}</option>
+                            ))}
+                        </select>
+
+                        {selectedGedung && (
+                            <button 
+                                className="btn-reset btn-primary" 
+                                onClick={handleResetFilter}
+                                title="Reset Filter"
+                            >
+                                <span className="material-symbols-outlined">restart_alt</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {loading ? (
@@ -182,41 +210,25 @@ const RoomsPage = () => {
                                 {filteredRooms.length > 0 ? (
                                     filteredRooms.map((room) => (
                                         <tr key={room.id}>
-                                            <td>
-                                                <div className="room-name">{room.nama}</div>
-                                            </td>
-                                            <td>
-                                                <div className="room-building">🏢 {room.gedung}</div>
-                                            </td>
-                                            <td>
-                                                <span className="capacity-badge">{room.kapasitas} Orang</span>
-                                            </td>
+                                            <td><div className="room-name">{room.nama}</div></td>
+                                            <td><div className="room-building">🏢 {room.gedung}</div></td>
+                                            <td><span className="capacity-badge">{room.kapasitas} Orang</span></td>
                                             <td>
                                                 <div className="action-buttons">
-                                                    <button 
-                                                        className="btn-action btn-edit" 
-                                                        onClick={() => handleEdit(room.id)}
-                                                        title="Edit"
-                                                    >
+                                                    <button className="btn-action btn-edit" onClick={() => handleOpenEdit(room)} title="Edit">
                                                         <span className="material-symbols-outlined" style={{fontSize: '18px'}}>edit</span>
                                                     </button>
-                                                    
-                                                    <button 
-                                                        className="btn-action btn-delete" 
-                                                        onClick={() => handleDelete(room.id)}
-                                                        title="Hapus"
-                                                    >
+                                                    <button className="btn-action btn-delete" onClick={() => handleDelete(room.id)} title="Hapus">
                                                         <span className="material-symbols-outlined" style={{fontSize: '18px'}}>delete</span>
                                                     </button>
-
                                                 </div>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={4} style={{textAlign: 'center', padding: '3rem'}}>
-                                            <div style={{color: '#64748b'}}>Tidak ada ruangan ditemukan.</div>
+                                        <td colSpan={4} style={{textAlign: 'center', padding: '3rem', color: '#64748b'}}>
+                                            Tidak ada ruangan ditemukan.
                                         </td>
                                     </tr>
                                 )}
@@ -225,6 +237,13 @@ const RoomsPage = () => {
                     </div>
                 )}
             </main>
+
+            <RoomModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleSave}
+                initialData={editingRoom}
+            />
         </div>
     );
 };

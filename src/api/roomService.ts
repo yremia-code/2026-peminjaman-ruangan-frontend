@@ -13,12 +13,12 @@ export const roomService = {
     },
 
     create: async (data: Omit<Ruangan, 'id' | 'isDeleted'>): Promise<Ruangan> => {
-        const response = await api.post<Ruangan>('/ruangan', { data });
+        const response = await api.post<Ruangan>('/ruangan',  data );
         return response.data;
     },
 
     update: async (id: number, data: Partial<Ruangan>): Promise<void> => {
-        await api.put(`/ruangan/${id}`, { data });
+        await api.put(`/ruangan/${id}`,  {id, ...data} );
     },
 
     delete: async (id: number): Promise<void> => {

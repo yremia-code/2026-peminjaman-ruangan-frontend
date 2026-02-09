@@ -1,8 +1,7 @@
-/* src/App.css */
+
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
 :root {
-  /* Colors */
   --primary: #1c4d8d;
   --primary-dark: #0f2854;
   --primary-soft: #dbeafe;
@@ -141,7 +140,6 @@ body {
 
 .btn-action .material-symbols-outlined { font-size: 18px; line-height: 1; display: block; font-weight: normal; }
 
-/* Status Pill */
 .status-pill {
   display: flex;
   align-items: center;
@@ -166,7 +164,6 @@ body {
   border-radius: 50%;
 }
 
-/* Skeleton Animation */
 @keyframes shimmer {
   0% { background-color: #e2e8f0; }
   50% { background-color: #f1f5f9; }
@@ -179,7 +176,6 @@ body {
   border-radius: 10px;
 }
 
-/* Scrollbar Utility */
 .hide-scrollbar {
   -ms-overflow-style: none;
 }
@@ -230,3 +226,45 @@ body {
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: #fdfdfd; }
 .data-table td:first-child {text-align: left;}
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5); 
+  backdrop-filter: blur(4px);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white; 
+  padding: 2rem; 
+  border-radius: 12px;
+  width: 90%; 
+  max-width: 450px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  margin-bottom: 1.5rem; 
+}
+
+.btn-close { 
+  background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; 
+}
+
+.form-group { margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group label { font-size: 0.9rem; font-weight: 600; color: #334155; }
+.form-group input { 
+  padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #efefef; color: #334155;
+}
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
+.btn-cancel { padding: 10px 20px; border-radius: 8px; border: none; background: #727272; cursor: pointer; }
+.btn-submit { padding: 10px 20px; border-radius: 8px; border: none; background: #3b82f6; color: white; font-weight: bold; cursor: pointer; }
