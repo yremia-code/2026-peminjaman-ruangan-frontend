@@ -1,25 +1,27 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
 import { roomService } from "../../api/roomService";
 import { userService } from "../../api/userService";
 import { bookingService } from "../../api/bookingService";
 import type { Ruangan, User, Peminjaman } from "../../types";
-import RoomModal from "../../components/RoomModal"; 
+import RoomModal from "../../components/RoomModal";
 import UserModal from "../../components/UserModal";
+import BookingModal from "../../components/BookingModal";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
     const [room, setRooms] = useState<Ruangan[]>([]);
     const [user, setUsers] = useState<User[]>([]);
     const [booking, setBookings] = useState<Peminjaman[]>([]);
-    
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [adminData, setAdminData] = useState({ nama: "Admin", role: "Petugas Lab" });
 
     const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
-    
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
     const navigate = useNavigate();
 
     const fetchData = useCallback(async (isBackground = false) => {
@@ -56,8 +58,8 @@ const AdminDashboard = () => {
 
         fetchData();
 
-        const intervalId = setInterval(() => { fetchData(true); }, 30000); 
-        return () => clearInterval(intervalId); 
+        const intervalId = setInterval(() => { fetchData(true); }, 30000);
+        return () => clearInterval(intervalId);
     }, [fetchData]);
 
     const groupedRooms = room.reduce((acc, room) => {
@@ -77,11 +79,11 @@ const AdminDashboard = () => {
     };
 
     const handleAddRoom = () => {
-        setIsRoomModalOpen(true); 
+        setIsRoomModalOpen(true);
     };
 
     const handleAddBooking = () => {
-        alert("Fitur Tambah Booking Segera Hadir! 🚧");
+        setIsBookingModalOpen(true);
     };
 
     const handleAddUser = () => {
@@ -107,6 +109,17 @@ const AdminDashboard = () => {
             fetchData(true);
         } catch (error) {
             alert("Gagal menambah user.")
+        }
+    }
+
+    const handleBookingSaved = async (formData: any) => {
+        try {
+            await bookingService.create(formData);
+            alert("Peminjaman berhasil ditambahkan! 🎉");
+            setIsBookingModalOpen(false);
+            fetchData(true);
+        } catch (error) {
+            alert("Gagal menambah peminjaman.");
         }
     }
 
@@ -144,15 +157,15 @@ const AdminDashboard = () => {
                         <h1 className="page-title">Overview</h1>
                         <p className="page-subtitle">Selamat datang kembali, {adminData.nama}.</p>
                     </div>
-                    
-                    <div style={{display: 'flex', gap: '10px'}}>
-                        <button className="btn-primary" onClick={handleAddBooking} style={{background: '#3b82f6'}}>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button className="btn-primary" onClick={handleAddBooking} style={{ background: '#3b82f6' }}>
                             + Booking
                         </button>
-                        <button className="btn-primary" onClick={handleAddUser} style={{background: '#8b5cf6'}}>
+                        <button className="btn-primary" onClick={handleAddUser} style={{ background: '#8b5cf6' }}>
                             + User
                         </button>
-                        <button className="btn-primary" onClick={handleAddRoom} style={{background: '#10b981'}}>
+                        <button className="btn-primary" onClick={handleAddRoom} style={{ background: '#10b981' }}>
                             + Ruangan
                         </button>
                     </div>
@@ -189,10 +202,10 @@ const AdminDashboard = () => {
                     </div>
                     <div className="horizontal-scroll-area hide-scrollbar">
                         {Object.entries(groupedRooms).map(([gedungName, roomsInGedung]) => (
-                            <div 
-                                key={gedungName} 
+                            <div
+                                key={gedungName}
                                 className="summary-card"
-                                style={{cursor: 'pointer'}}
+                                style={{ cursor: 'pointer' }}
                                 onClick={() => navigate(`/admin/rooms?gedung=${encodeURIComponent(gedungName)}`)}
                             >
                                 <div className="card-top">
@@ -214,27 +227,43 @@ const AdminDashboard = () => {
                         <Link to="/admin/bookings" className="see-all-btn">Lihat Semua <span className="arrow-small">➔</span></Link>
                     </div>
                     <div className="horizontal-scroll-area hide-scrollbar">
-                        <div className="summary-card">
+
+                        <div
+                            className="summary-card"
+                            style={{ cursor: 'pointer' }} 
+                            onClick={() => navigate('/admin/bookings?status=Pending')} 
+                        >
                             <div className="card-top"><div className="icon-box icon-orange">⏳</div><div className="card-arrow">➔</div></div>
                             <div className="card-bottom"><h4 className="card-title">Pending</h4><p className="card-desc">{pendingCount} Menunggu</p></div>
                         </div>
-                        <div className="summary-card">
+
+                        <div
+                            className="summary-card"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => navigate('/admin/bookings?status=Approved')}
+                        >
                             <div className="card-top"><div className="icon-box icon-green">✅</div><div className="card-arrow">➔</div></div>
                             <div className="card-bottom"><h4 className="card-title">Approved</h4><p className="card-desc">{approvedCount} Disetujui</p></div>
                         </div>
-                        <div className="summary-card">
+
+                        <div
+                            className="summary-card"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => navigate('/admin/bookings?status=Rejected')}
+                        >
                             <div className="card-top"><div className="icon-box icon-red">✕</div><div className="card-arrow">➔</div></div>
                             <div className="card-bottom"><h4 className="card-title">Rejected</h4><p className="card-desc">{rejectedCount} Ditolak</p></div>
                         </div>
+
                     </div>
                 </section>
             </main>
 
-            <RoomModal 
+            <RoomModal
                 isOpen={isRoomModalOpen}
                 onClose={() => setIsRoomModalOpen(false)}
                 onSubmit={handleRoomSaved}
-                initialData={null} 
+                initialData={null}
             />
 
             <UserModal
@@ -243,6 +272,14 @@ const AdminDashboard = () => {
                 onSubmit={handleUserSaved}
                 initialData={null}
             />
+
+            <BookingModal
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
+                onSubmit={handleBookingSaved}
+                initialData={null}
+            />
+            
         </div>
     );
 };

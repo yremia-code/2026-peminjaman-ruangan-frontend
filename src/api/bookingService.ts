@@ -18,7 +18,7 @@ export const bookingService = {
     },
 
     update: async (id: number, data: Partial<Peminjaman>): Promise<void> => {
-        await api.put(`/peminjaman/${id}`, data);
+        await api.put(`/peminjaman/${id}`, {id, ...data});
     },
 
     updateStatus: async (id: number, status: string): Promise<void> => {
