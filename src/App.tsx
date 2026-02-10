@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
+import Login from './pages/Auth/LoginPage';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import RoomsPage from './pages/Admin/RoomsPage';
@@ -19,7 +19,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path='/admin/rooms' element={<RoomsPage />} />
           <Route path='/admin/bookings' element={<BookingsPage />} />
           <Route path='/admin/users' element={<UsersPage />} />
