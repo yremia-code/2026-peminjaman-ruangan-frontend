@@ -1,18 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { bookingService } from "../../api/bookingService";
 import type { Peminjaman } from "../../types";
 import BookingModal from "../../components/BookingModal";
+import AdminLayout from "../../layouts/AdminLayout";
 import "./BookingsPage.css";
 
 const BookingsPage = () => {
   const [bookings, setBookings] = useState<Peminjaman[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Peminjaman[]>([]);
   const [loading, setLoading] = useState(true);
-  const [adminData, setAdminData] = useState({
-    nama: "Admin",
-    role: "Petugas Lab",
-  });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -21,7 +18,6 @@ const BookingsPage = () => {
   const [editingBooking, setEditingBooking] = useState<Peminjaman | null>(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const fetchData = useCallback(async (isBackground = false) => {
     if (!isBackground) setLoading(true);
@@ -38,19 +34,11 @@ const BookingsPage = () => {
   }, []);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setAdminData({
-          nama: parsedUser.nama || "Admin",
-          role: parsedUser.role || "Petugas Lab",
-        });
-      } catch (e) { console.error(e); }
-    }
     fetchData();
 
-    const intervalId = setInterval(() => { fetchData(true); }, 30000);
+    const intervalId = setInterval(() => {
+      fetchData(true);
+    }, 30000);
     return () => clearInterval(intervalId);
   }, [fetchData]);
 
@@ -70,7 +58,9 @@ const BookingsPage = () => {
       result = result.filter(
         (b) =>
           (b.user?.nama || "").toLowerCase().includes(lower) ||
-          (b.ruangan?.nama || "").toLowerCase().includes(lower),
+          (b.ruangan?.nama || "").toLowerCase().includes(lower) ||
+          (b.ruangan?.gedung || "").toLowerCase().includes(lower) ||
+          (b.user?.email || "").toLowerCase().includes(lower),
       );
     }
 
@@ -80,7 +70,10 @@ const BookingsPage = () => {
 
     setFilteredBookings(result);
   }, [bookings, searchParams, searchTerm]);
-  const handleStatusFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+
+  const handleStatusFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     const val = e.target.value;
     if (val) {
       setSearchParams({ status: val });
@@ -91,7 +84,7 @@ const BookingsPage = () => {
 
   const handleResetFilter = () => {
     setSearchParams({});
-  }
+  };
 
   const handleOpenAdd = () => {
     setEditingBooking(null);
@@ -101,7 +94,7 @@ const BookingsPage = () => {
   const handleEditDetail = (booking: Peminjaman) => {
     setEditingBooking(booking);
     setIsModalOpen(true);
-  }
+  };
 
   const handleSave = async (formData: any) => {
     try {
@@ -117,7 +110,10 @@ const BookingsPage = () => {
     } catch (error: any) {
       console.error("Error saving booking:", error);
       if (error.response && error.response.data) {
-        const backendMessage = error.response.data.message || error.response.data.title || "Terjadi kesalahan.";
+        const backendMessage =
+          error.response.data.message ||
+          error.response.data.title ||
+          "Terjadi kesalahan.";
         alert(`Gagal menyimpan booking: ${backendMessage} ❌`);
       } else {
         alert("Gagal menyimpan data booking. Cek koneksi atau coba lagi. ❌");
@@ -125,7 +121,10 @@ const BookingsPage = () => {
     }
   };
 
-  const handleStatusChange = async (id: number, newStatus: "Approved" | "Rejected") => {
+  const handleStatusChange = async (
+    id: number,
+    newStatus: "Approved" | "Rejected",
+  ) => {
     const actionText = newStatus === "Approved" ? "menyetujui" : "menolak";
     if (!window.confirm(`Yakin ingin ${actionText} peminjaman ini?`)) return;
 
@@ -143,7 +142,8 @@ const BookingsPage = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Apakah Anda yakin ingin menghapus peminjaman ini?")) return;
+    if (!window.confirm("Apakah Anda yakin ingin menghapus peminjaman ini?"))
+      return;
     try {
       await bookingService.delete(id);
       const updatedBookings = bookings.filter((b) => b.id !== id);
@@ -155,17 +155,16 @@ const BookingsPage = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
-
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
     return date.toLocaleDateString("id-ID", {
-      day: "numeric", month: "short", year: "numeric",
-      hour: "2-digit", minute: "2-digit", hour12: false,
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   };
 
@@ -176,165 +175,226 @@ const BookingsPage = () => {
   };
 
   return (
-    <div className="bookings-wrapper">
-      <nav className="navbar-top">
-        <div className="navbar-left">
-          <div className="brand-spr">SPR ADMIN</div>
-          <div className="nav-links">
-            <Link to="/admin" className="nav-item">🏠 Dashboard</Link>
-            <Link to="/admin/bookings" className="nav-item active">📅 Bookings</Link>
-            <Link to="/admin/rooms" className="nav-item">🏢 Rooms</Link>
-            <Link to="/admin/users" className="nav-item">👥 Users</Link>
-          </div>
-        </div>
-        <div className="right-nav">
-          <div className="status-pill status-online">
-            <div className="dot-indicator"></div> Online
-          </div>
-          <div className="admin-profile-pill">
-            <div className="profile-text">
-              <div className="name">{adminData.nama}</div>
-              <div className="role">{adminData.role}</div>
-            </div>
-            <div className="avatar-circle"></div>
-          </div>
-          <button onClick={handleLogout} className="btn-logout-mini" title="Logout">🚪</button>
-        </div>
-      </nav>
-
-      <main className="bookings-content">
-        <div className="page-header">
-          <div>
-            <h1>Daftar Peminjaman</h1>
-            <p>Kelola persetujuan dan jadwal peminjaman ruangan.</p>
-          </div>
-
-          <button className="btn-primary" onClick={handleOpenAdd}>
-            <span className="material-symbols-outlined">add</span>
-            Buat Peminjaman
-          </button>
+    <AdminLayout>
+      <div className="header-row">
+        <div>
+          <h1 className="page-title">Daftar Peminjaman</h1>
+          <p className="page-subtitle">
+            Kelola persetujuan dan jadwal peminjaman ruangan.
+          </p>
         </div>
 
-        <div className="filter-bar">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Cari nama peminjam atau ruangan..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <button className="btn-primary" onClick={handleOpenAdd}>
+          <span className="material-symbols-outlined">add</span>
+          Buat Peminjaman
+        </button>
+      </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <select
-              className="filter-select"
-              value={statusFilter}
-              onChange={handleStatusFilterChange}
+      <div className="filter-bar">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Cari nama peminjam/email/ruangan/gedung..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <select
+            className="filter-select"
+            value={statusFilter}
+            onChange={handleStatusFilterChange}
+          >
+            <option value="">Semua Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+
+          {statusFilter && (
+            <button
+              className="btn-reset btn-primary"
+              onClick={handleResetFilter}
+              title="Reset Filter"
             >
-              <option value="">Semua Status</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-
-            {statusFilter && (
-              <button
-                className="btn-reset btn-primary"
-                onClick={handleResetFilter}
-                title="Reset Filter"
-              >
-                <span className="material-symbols-outlined">restart_alt</span>
-              </button>
-            )}
-          </div>
+              <span className="material-symbols-outlined">restart_alt</span>
+            </button>
+          )}
         </div>
+      </div>
 
-        {loading ? (
-          <div className="skeleton" style={{ height: "300px" }}></div>
-        ) : (
-          <div className="table-card">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Peminjam</th>
-                  <th>Ruangan</th>
-                  <th>Tanggal</th>
-                  <th>Status</th>
-                  <th style={{ textAlign: "center" }}>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBookings.length > 0 ? (
-                  filteredBookings.map((b) => (
-                    <tr key={b.id}>
-                      <td>
-                        <div className="user-info">
-                          <div className="user-avatar-small">
-                            {b.user?.nama?.charAt(0) || "U"}
+      {loading ? (
+        <div className="skeleton" style={{ height: "300px" }}></div>
+      ) : (
+        <div className="table-card">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Peminjam</th>
+                <th>Ruangan</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+                <th style={{ textAlign: "center" }}>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredBookings.length > 0 ? (
+                filteredBookings.map((b) => (
+                  <tr key={b.id}>
+                    <td>
+                      <div className="user-info">
+                        <div className="user-avatar-small">
+                          {b.user?.nama?.charAt(0) || "U"}
+                        </div>
+                        <div>
+                          <div className="user-name-text">
+                            {b.user?.nama || "Unknown User"}
                           </div>
-                          <div>
-                            <div className="user-name-text">{b.user?.nama || "Unknown User"}</div>
-                            <div className="user-sub-text">{b.user?.email}</div>
-                          </div>
+                          <div className="user-sub-text">{b.user?.email}</div>
                         </div>
-                      </td>
-                      <td>
-                        <div className="room-name">{b.ruangan?.nama || "Unknown Room"}</div>
-                        <div className="user-sub-text">{b.ruangan?.gedung}</div>
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: 600, color: "#334155", fontSize: "0.85rem" }}>
-                          {formatDate(b.tanggalPinjam)}
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "#94a3b8", margin: "2px 0" }}>s/d</div>
-                        <div style={{ fontWeight: 600, color: "#334155", fontSize: "0.85rem" }}>
-                          {formatDate(b.tanggalSelesai)}
-                        </div>
-                      </td>
-                      <td>
-                        <div className={`status-badge ${getStatusClass(b.status)}`}>
-                          {b.status === "Pending" && <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>hourglass_empty</span>}
-                          {b.status === "Approved" && <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>check_circle</span>}
-                          {b.status === "Rejected" && <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>cancel</span>}
-                          {b.status}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="btn-action btn-edit" onClick={() => handleEditDetail(b)} title="Edit Detail">
-                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>edit</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="room-name">
+                        {b.ruangan?.nama || "Unknown Room"}
+                      </div>
+                      <div className="user-sub-text">{b.ruangan?.gedung}</div>
+                    </td>
+                    <td>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          color: "#334155",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {formatDate(b.tanggalPinjam)}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "0.75rem",
+                          color: "#94a3b8",
+                          margin: "2px 0",
+                        }}
+                      >
+                        s/d
+                      </div>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          color: "#334155",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {formatDate(b.tanggalSelesai)}
+                      </div>
+                    </td>
+                    <td>
+                      <div
+                        className={`status-badge ${getStatusClass(b.status)}`}
+                      >
+                        {b.status === "Pending" && (
+                          <span
+                            className="material-symbols-outlined"
+                            style={{ fontSize: "14px" }}
+                          >
+                            hourglass_empty
+                          </span>
+                        )}
+                        {b.status === "Approved" && (
+                          <span
+                            className="material-symbols-outlined"
+                            style={{ fontSize: "14px" }}
+                          >
+                            check_circle
+                          </span>
+                        )}
+                        {b.status === "Rejected" && (
+                          <span
+                            className="material-symbols-outlined"
+                            style={{ fontSize: "14px" }}
+                          >
+                            cancel
+                          </span>
+                        )}
+                        {b.status}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="btn-action btn-edit"
+                          onClick={() => handleEditDetail(b)}
+                          title="Edit Detail"
+                        >
+                          <span
+                            className="material-symbols-outlined"
+                            style={{ fontSize: "18px" }}
+                          >
+                            edit
+                          </span>
+                        </button>
+
+                        {b.status !== "Approved" && (
+                          <button
+                            className="btn-action btn-approve"
+                            title="Setujui"
+                            onClick={() => handleStatusChange(b.id, "Approved")}
+                          >
+                            <span className="material-symbols-outlined">
+                              check
+                            </span>
                           </button>
+                        )}
 
-                          {b.status !== "Approved" && (
-                            <button className="btn-action btn-approve" title="Setujui" onClick={() => handleStatusChange(b.id, "Approved")}>
-                              <span className="material-symbols-outlined">check</span>
-                            </button>
-                          )}
-
-                          {b.status !== "Rejected" && (
-                            <button className="btn-action btn-reject" title="Tolak" onClick={() => handleStatusChange(b.id, "Rejected")}>
-                              <span className="material-symbols-outlined">close</span>
-                            </button>
-                          )}
-
-                          <button className="btn-action btn-delete" title="Hapus" onClick={() => handleDelete(b.id)}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+                        {b.status !== "Rejected" && (
+                          <button
+                            className="btn-action btn-reject"
+                            title="Tolak"
+                            onClick={() => handleStatusChange(b.id, "Rejected")}
+                          >
+                            <span className="material-symbols-outlined">
+                              close
+                            </span>
                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
-                      {statusFilter ? `Tidak ada booking dengan status ${statusFilter}.` : "Tidak ada data peminjaman."}
+                        )}
+
+                        <button
+                          className="btn-action btn-delete"
+                          title="Hapus"
+                          onClick={() => handleDelete(b.id)}
+                        >
+                          <span
+                            className="material-symbols-outlined"
+                            style={{ fontSize: "18px" }}
+                          >
+                            delete
+                          </span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </main>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={5}
+                    style={{
+                      textAlign: "center",
+                      padding: "3rem",
+                      color: "#64748b",
+                    }}
+                  >
+                    {statusFilter
+                      ? `Tidak ada booking dengan status ${statusFilter}.`
+                      : "Tidak ada data peminjaman."}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <BookingModal
         isOpen={isModalOpen}
@@ -342,7 +402,7 @@ const BookingsPage = () => {
         onSubmit={handleSave}
         initialData={editingBooking}
       />
-    </div>
+    </AdminLayout>
   );
 };
 
