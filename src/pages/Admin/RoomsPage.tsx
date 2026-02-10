@@ -20,7 +20,6 @@ const RoomsPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    // 1. Fetch Data User & Rooms
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -49,13 +48,9 @@ const RoomsPage = () => {
         }
     };
 
-    // 2. Logic Filter Utama (Sinkronisasi URL <-> State)
     useEffect(() => {
         const gedungParam = searchParams.get("gedung");
 
-        // --- PERBAIKAN LOGIC DISINI ---
-        // Kita paksa state 'selectedGedung' agar SELALU sama dengan URL
-        // Jika URL kosong, state juga harus kosong.
         const activeGedung = gedungParam || "";
 
         if (selectedGedung !== activeGedung) {
@@ -64,7 +59,6 @@ const RoomsPage = () => {
 
         let result = rooms;
 
-        // Filter Search
         if (searchTerm) {
             const lowerKeyword = searchTerm.toLowerCase();
             result = result.filter(r =>
@@ -73,20 +67,17 @@ const RoomsPage = () => {
             );
         }
 
-        // Filter Gedung (Gunakan 'activeGedung' dari URL biar akurat)
         if (activeGedung) {
             result = result.filter(r => r.gedung === activeGedung);
         }
 
         setFilteredRooms(result);
 
-    }, [rooms, searchTerm, searchParams]); // Hapus 'selectedGedung' dari dependency biar gak loop
+    }, [rooms, searchTerm, searchParams]); 
 
-    // 3. Handle Dropdown Change -> Update URL
     const handleGedungChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const val = e.target.value;
 
-        // Cukup update URL, nanti useEffect di atas yang akan mengupdate state & tabel
         if (val) {
             setSearchParams({ gedung: val });
         } else {
@@ -95,7 +86,7 @@ const RoomsPage = () => {
     };
 
     const handleResetFilter = () => {
-        setSearchParams({}); // Kosongkan URL, useEffect akan mereset state & tabel
+        setSearchParams({}); 
     };
 
     const uniqueGedung = Array.from(new Set(rooms.map(r => r.gedung))).sort();
@@ -182,7 +173,7 @@ const RoomsPage = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <select
                             className="filter-select"
-                            value={selectedGedung} // Ini akan otomatis berubah karena useEffect
+                            value={selectedGedung}
                             onChange={handleGedungChange}
                         >
                             <option value="">Semua Gedung</option>
