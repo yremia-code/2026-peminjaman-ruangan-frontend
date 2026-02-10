@@ -28,7 +28,7 @@ const LoginPage = () => {
       if (data.user.role === "Admin" || data.user.role === "Petugas Lab") {
         navigate("/admin/dashboard");
       } else {
-        navigate("/dashboard"); 
+        navigate("/user"); 
       }
 
     } catch (err: any) {
