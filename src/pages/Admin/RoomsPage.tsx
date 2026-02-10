@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { roomService } from "../../api/roomService";
 import type { Ruangan } from "../../types";
-import RoomModal from "../../components/RoomModal"; 
+import RoomModal from "../../components/RoomModal";
 import "./RoomsPage.css";
 
 const RoomsPage = () => {
@@ -13,13 +13,14 @@ const RoomsPage = () => {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedGedung, setSelectedGedung] = useState("");
-    
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRoom, setEditingRoom] = useState<Ruangan | null>(null);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
+    // 1. Fetch Data User & Rooms
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -48,34 +49,44 @@ const RoomsPage = () => {
         }
     };
 
+    // 2. Logic Filter Utama (Sinkronisasi URL <-> State)
     useEffect(() => {
         const gedungParam = searchParams.get("gedung");
-        if (gedungParam) {
-            setSelectedGedung(gedungParam);
+
+        // --- PERBAIKAN LOGIC DISINI ---
+        // Kita paksa state 'selectedGedung' agar SELALU sama dengan URL
+        // Jika URL kosong, state juga harus kosong.
+        const activeGedung = gedungParam || "";
+
+        if (selectedGedung !== activeGedung) {
+            setSelectedGedung(activeGedung);
         }
 
         let result = rooms;
 
+        // Filter Search
         if (searchTerm) {
             const lowerKeyword = searchTerm.toLowerCase();
-            result = result.filter(r => 
-                r.nama.toLowerCase().includes(lowerKeyword) || 
+            result = result.filter(r =>
+                r.nama.toLowerCase().includes(lowerKeyword) ||
                 r.gedung.toLowerCase().includes(lowerKeyword)
             );
         }
 
-        if (selectedGedung) {
-            result = result.filter(r => r.gedung === selectedGedung);
+        // Filter Gedung (Gunakan 'activeGedung' dari URL biar akurat)
+        if (activeGedung) {
+            result = result.filter(r => r.gedung === activeGedung);
         }
 
         setFilteredRooms(result);
 
-    }, [rooms, searchTerm, selectedGedung, searchParams]);
+    }, [rooms, searchTerm, searchParams]); // Hapus 'selectedGedung' dari dependency biar gak loop
 
+    // 3. Handle Dropdown Change -> Update URL
     const handleGedungChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const val = e.target.value;
-        setSelectedGedung(val); 
-        
+
+        // Cukup update URL, nanti useEffect di atas yang akan mengupdate state & tabel
         if (val) {
             setSearchParams({ gedung: val });
         } else {
@@ -84,8 +95,7 @@ const RoomsPage = () => {
     };
 
     const handleResetFilter = () => {
-        setSelectedGedung("");
-        setSearchParams({});
+        setSearchParams({}); // Kosongkan URL, useEffect akan mereset state & tabel
     };
 
     const uniqueGedung = Array.from(new Set(rooms.map(r => r.gedung))).sort();
@@ -107,7 +117,7 @@ const RoomsPage = () => {
                 await roomService.create(formData);
                 alert("Berhasil tambah ruangan! 🎉");
             }
-            fetchData(); 
+            fetchData();
             setIsModalOpen(false);
         } catch (error) { alert("Gagal menyimpan data ❌"); }
     };
@@ -153,7 +163,7 @@ const RoomsPage = () => {
                         <h1>Manajemen Ruangan</h1>
                         <p>Daftar semua ruangan laboratorium dan kelas.</p>
                     </div>
-                    
+
                     <button className="btn-primary" onClick={handleOpenAdd}>
                         <span className="material-symbols-outlined">add</span>
                         Tambah Ruangan
@@ -161,18 +171,18 @@ const RoomsPage = () => {
                 </div>
 
                 <div className="filter-bar">
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         className="search-input"
                         placeholder="Cari nama ruangan..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    
-                    <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                        <select 
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <select
                             className="filter-select"
-                            value={selectedGedung}
+                            value={selectedGedung} // Ini akan otomatis berubah karena useEffect
                             onChange={handleGedungChange}
                         >
                             <option value="">Semua Gedung</option>
@@ -182,8 +192,8 @@ const RoomsPage = () => {
                         </select>
 
                         {selectedGedung && (
-                            <button 
-                                className="btn-reset btn-primary" 
+                            <button
+                                className="btn-reset btn-primary"
                                 onClick={handleResetFilter}
                                 title="Reset Filter"
                             >
@@ -194,7 +204,7 @@ const RoomsPage = () => {
                 </div>
 
                 {loading ? (
-                    <div className="skeleton" style={{height: '300px'}}></div>
+                    <div className="skeleton" style={{ height: '300px' }}></div>
                 ) : (
                     <div className="table-card">
                         <table className="data-table">
@@ -203,7 +213,7 @@ const RoomsPage = () => {
                                     <th>Nama Ruangan</th>
                                     <th>Gedung</th>
                                     <th>Kapasitas</th>
-                                    <th style={{textAlign: 'center'}}>Aksi</th>
+                                    <th style={{ textAlign: 'center' }}>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -216,10 +226,10 @@ const RoomsPage = () => {
                                             <td>
                                                 <div className="action-buttons">
                                                     <button className="btn-action btn-edit" onClick={() => handleOpenEdit(room)} title="Edit">
-                                                        <span className="material-symbols-outlined" style={{fontSize: '18px'}}>edit</span>
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>edit</span>
                                                     </button>
                                                     <button className="btn-action btn-delete" onClick={() => handleDelete(room.id)} title="Hapus">
-                                                        <span className="material-symbols-outlined" style={{fontSize: '18px'}}>delete</span>
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -227,7 +237,7 @@ const RoomsPage = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={4} style={{textAlign: 'center', padding: '3rem', color: '#64748b'}}>
+                                        <td colSpan={4} style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
                                             Tidak ada ruangan ditemukan.
                                         </td>
                                     </tr>
@@ -238,7 +248,7 @@ const RoomsPage = () => {
                 )}
             </main>
 
-            <RoomModal 
+            <RoomModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleSave}
