@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/Auth/LoginPage';
-import Dashboard from './pages/User/Dashboard';
+import UserDashboard from './pages/User/UserDashboard';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import RoomsPage from './pages/Admin/RoomsPage';
 import BookingsPage from './pages/Admin/BookingsPage';
@@ -22,7 +22,7 @@ function App() {
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["Mahasiswa"]} />}>
-          <Route path="/user" element={<Dashboard />} />
+          <Route path="/user" element={<UserDashboard />} />
         </Route>
         
         <Route path="*" element={<div>404 Not Found</div>} />
