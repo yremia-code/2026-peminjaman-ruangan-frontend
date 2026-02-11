@@ -247,7 +247,14 @@ const AdminDashboard = () => {
                 <div className="icon-box icon-gray">
                   <span className="material-symbols-outlined">apartment</span>
                 </div>
-                <div className="card-arrow">➔</div>
+                <div className="card-arrow">
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: "1.25rem" }}
+                  >
+                    arrow_right_alt
+                  </span>
+                </div>
               </div>
               <div className="card-bottom">
                 <h4 className="card-title">{gedungName}</h4>
@@ -283,7 +290,10 @@ const AdminDashboard = () => {
                 </span>
               </div>
               <div className="card-arrow">
-                <span className="material-symbols-outlined">
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "1.25rem" }}
+                >
                   arrow_right_alt
                 </span>
               </div>
@@ -304,7 +314,10 @@ const AdminDashboard = () => {
                 <span className="material-symbols-outlined">check_box</span>
               </div>
               <div className="card-arrow">
-                <span className="material-symbols-outlined">
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "1.25rem" }}
+                >
                   arrow_right_alt
                 </span>
               </div>
@@ -325,7 +338,10 @@ const AdminDashboard = () => {
                 <span className="material-symbols-outlined">cancel</span>
               </div>
               <div className="card-arrow">
-                <span className="material-symbols-outlined">
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "1.25rem" }}
+                >
                   arrow_right_alt
                 </span>
               </div>

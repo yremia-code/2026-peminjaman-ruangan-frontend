@@ -166,21 +166,6 @@
   color: var(--primary-dark);
   margin-bottom: 4px;
 }
-.card-desc {
-  font-size: 0.75rem;
-  color: var(--primary);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  opacity: 0;
-  transition: 0.2s;
-  transform: translateX(-10px);
-}
-.room-card-small:hover .card-desc {
-  opacity: 1;
-  transform: translateX(0);
-}
 
 .history-sidebar {
   background: var(--white);

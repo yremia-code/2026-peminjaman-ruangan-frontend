@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams} from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { roomService } from "../../api/roomService";
 import type { Ruangan } from "../../types";
 import RoomModal from "../../components/RoomModal";
@@ -139,30 +139,28 @@ const RoomsPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <select
-            className="filter-select"
-            value={selectedGedung}
-            onChange={handleGedungChange}
-          >
-            <option value="">Semua Gedung</option>
-            {uniqueGedung.map((g, idx) => (
-              <option key={idx} value={g}>
-                {g}
-              </option>
-            ))}
-          </select>
+        <select
+          className="filter-select"
+          value={selectedGedung}
+          onChange={handleGedungChange}
+        >
+          <option value="">Semua Gedung</option>
+          {uniqueGedung.map((g, idx) => (
+            <option key={idx} value={g}>
+              {g}
+            </option>
+          ))}
+        </select>
 
-          {selectedGedung && (
-            <button
-              className="btn-reset btn-primary"
-              onClick={handleResetFilter}
-              title="Reset Filter"
-            >
-              <span className="material-symbols-outlined">restart_alt</span>
-            </button>
-          )}
-        </div>
+        {selectedGedung && (
+          <button
+            className="btn-reset btn-primary"
+            onClick={handleResetFilter}
+            title="Reset Filter"
+          >
+            <span className="material-symbols-outlined">restart_alt</span>
+          </button>
+        )}
       </div>
 
       {loading ? (

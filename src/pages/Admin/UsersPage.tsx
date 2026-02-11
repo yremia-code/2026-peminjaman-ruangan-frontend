@@ -130,7 +130,7 @@ const UsersPage = () => {
         >
           <option value="">Semua Role</option>
           <option value="Admin">Admin</option>
-          <option value="Mahasiwa">Mahasiswa</option>
+          <option value="Mahasiswa">Mahasiswa</option>
         </select>
       </div>
 

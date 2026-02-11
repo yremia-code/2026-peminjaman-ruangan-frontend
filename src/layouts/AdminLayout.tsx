@@ -31,43 +31,58 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     navigate("/");
   };
 
-  const isActive = (path: string) => (location.pathname === path ? "nav-item active" : "nav-item");
+  const isActive = (path: string) =>
+    location.pathname === path ? "nav-link-item active" : "nav-link-item";
 
   return (
-    <div className="admin-wrapper">
-      <nav className="navbar-top">
-        <div className="navbar-left">
-          <div className="brand-spr">SPR ADMIN</div>
-          <div className="nav-links">
-            <Link to="/admin/dashboard" className={isActive("/admin/dashboard")}>
-              <span className="material-symbols-outlined">dashboard</span>Dashboard</Link>
+    <div className="layout-wrapper">
+      <nav className="layout-navbar">
+        <div className="navbar-section">
+          <div className="layout-brand">SPR ADMIN</div>
+          <div className="navbar-section" style={{ marginLeft: "2rem" }}>
+            <Link
+              to="/admin/dashboard"
+              className={isActive("/admin/dashboard")}
+            >
+              <span className="material-symbols-outlined">dashboard</span>
+              Dashboard
+            </Link>
             <Link to="/admin/bookings" className={isActive("/admin/bookings")}>
-            <span className="material-symbols-outlined">room_preferences</span>Peminjaman</Link>
+              <span className="material-symbols-outlined">
+                room_preferences
+              </span>
+              Peminjaman
+            </Link>
             <Link to="/admin/rooms" className={isActive("/admin/rooms")}>
-            <span className="material-symbols-outlined">apartment</span>Ruangan</Link>
+              <span className="material-symbols-outlined">apartment</span>
+              Ruangan
+            </Link>
             <Link to="/admin/users" className={isActive("/admin/users")}>
-            <span className="material-symbols-outlined">group</span>Pengguna</Link>
+              <span className="material-symbols-outlined">group</span>Pengguna
+            </Link>
           </div>
         </div>
-
-        <div className="right-nav">
+        <div className="navbar-section">
           <div className="status-pill status-online">
             <div className="dot-indicator"></div> Online
           </div>
-          <div className="admin-profile-pill">
-            <div className="profile-text">
-              <div className="name">{user.nama}</div>
-              <div className="role">{user.role}</div>
+          <div className="profile-pill">
+            <div className="profile-info">
+              <div className="profile-name">{user.nama}</div>
+              <div className="profile-role">{user.role}</div>
             </div>
             <div className="avatar-circle">{user.nama.charAt(0)}</div>
           </div>
-          <button onClick={handleLogout} className="btn-logout-mini" title="Logout"><span className="material-symbols-outlined">logout</span></button>
+          <button
+            onClick={handleLogout}
+            className="btn-icon-soft"
+            title="Logout"
+          >
+            <span className="material-symbols-outlined">logout</span>
+          </button>
         </div>
       </nav>
-
-      <main className="layout-content">
-        {children}
-      </main>
+      <main className="layout-container">{children}</main>
     </div>
   );
 };

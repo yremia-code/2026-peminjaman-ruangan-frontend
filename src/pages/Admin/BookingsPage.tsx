@@ -199,28 +199,26 @@ const BookingsPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <select
-            className="filter-select"
-            value={statusFilter}
-            onChange={handleStatusFilterChange}
-          >
-            <option value="">Semua Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
+        <select
+          className="filter-select"
+          value={statusFilter}
+          onChange={handleStatusFilterChange}
+        >
+          <option value="">Semua Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
 
-          {statusFilter && (
-            <button
-              className="btn-reset btn-primary"
-              onClick={handleResetFilter}
-              title="Reset Filter"
-            >
-              <span className="material-symbols-outlined">restart_alt</span>
-            </button>
-          )}
-        </div>
+        {statusFilter && (
+          <button
+            className="btn-reset btn-primary"
+            onClick={handleResetFilter}
+            title="Reset Filter"
+          >
+            <span className="material-symbols-outlined">restart_alt</span>
+          </button>
+        )}
       </div>
 
       {loading ? (

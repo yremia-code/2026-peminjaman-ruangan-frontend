@@ -71,7 +71,7 @@ const LoginPage = () => {
                 <span className="material-symbols-outlined input-icon">mail</span>
                 <input
                   type="email"
-                  className="form-input"
+                  className="form-input form-input-login"
                   placeholder="user@pens.ac.id"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -87,7 +87,7 @@ const LoginPage = () => {
                 <span className="material-symbols-outlined input-icon">lock</span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="form-input"
+                  className="form-input form-input-login"
                   placeholder="Masukkan password..."
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

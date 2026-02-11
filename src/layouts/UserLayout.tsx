@@ -31,35 +31,44 @@ const UserLayout = ({ children }: UserLayoutProps) => {
   };
 
   return (
-    <div className="user-layout-wrapper">
-      {/* NAVBAR SIMPEL */}
-      <nav className="user-navbar">
-        <div className="user-container nav-container">
-          <Link to="/user" className="user-brand">
+    <div className="layout-wrapper">
+      {" "}
+      {/* SUDAH DIGANTI DARI user-layout-wrapper */}
+      <nav className="layout-navbar">
+        {" "}
+        {/* SUDAH DIGANTI DARI user-navbar */}
+        <div
+          className="navbar-section"
+          style={{ width: "100%", justifyContent: "space-between" }}
+        >
+          {/* Logo Kiri */}
+          <Link to="/user" className="layout-brand">
             SPR PENS <span className="brand-tag">Student</span>
           </Link>
 
-          <div className="user-nav-right">
-            <div className="user-profile-pill">
-              <div className="avatar-circle-user">
+          {/* Menu Kanan */}
+          <div className="navbar-section" style={{ gap: "1rem" }}>
+            <div className="profile-pill">
+              <div className="avatar-circle">
                 {user.nama.charAt(0).toUpperCase()}
               </div>
-              <span className="user-name-text">{user.nama}</span>
+              <div className="profile-info">
+                <div className="profile-name">{user.nama}</div>
+                <div className="profile-role">{user.role}</div>
+              </div>
             </div>
-            
-            <button onClick={handleLogout} className="btn-logout-user" title="Keluar">
+
+            <button
+              onClick={handleLogout}
+              className="btn-icon-soft"
+              title="Keluar"
+            >
               <span className="material-symbols-outlined">logout</span>
             </button>
           </div>
         </div>
       </nav>
-
-      {/* KONTEN UTAMA */}
-      <main className="user-content user-container">
-        {children}
-      </main>
-
-      {/* FOOTER SEDERHANA */}
+      <main className="layout-container">{children}</main>
       <footer className="user-footer">
         <p>&copy; 2026 Sistem Peminjaman Ruangan PENS.</p>
       </footer>
