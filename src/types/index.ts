@@ -23,7 +23,7 @@ export interface Peminjaman{
     ruangan?: Ruangan;
     tanggalPinjam: string;
     tanggalSelesai: string;
-    status: 'Pending' | 'Approved' | 'Rejected';
+    status: 'Pending' | 'Approved' | 'Rejected' | 'Canceled';
 }
 
 export interface LoginDTO {

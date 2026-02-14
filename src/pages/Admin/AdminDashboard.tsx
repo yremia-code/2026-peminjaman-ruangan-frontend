@@ -83,6 +83,7 @@ const AdminDashboard = () => {
   const pendingCount = booking.filter((b) => b.status === "Pending").length;
   const approvedCount = booking.filter((b) => b.status === "Approved").length;
   const rejectedCount = booking.filter((b) => b.status === "Rejected").length;
+  const canceledCount = booking.filter((b) => b.status === "Canceled").length;
 
   const handleAddRoom = () => {
     setIsRoomModalOpen(true);
@@ -349,6 +350,27 @@ const AdminDashboard = () => {
             <div className="card-bottom">
               <h4 className="card-title">Rejected</h4>
               <p className="card-desc">{rejectedCount} Ditolak</p>
+            </div>
+          </div>
+
+          <div
+            className="summary-card"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/admin/bookings?status=Canceled")}
+          >
+            <div className="card-top">
+              <div className="icon-box icon-gray">
+                <span className="material-symbols-outlined">block</span>
+              </div>
+              <div className="card-arrow">
+                <span className="material-symbols-outlined">
+                  arrow_right_alt
+                </span>
+              </div>
+            </div>
+            <div className="card-bottom">
+              <h4 className="card-title">Canceled</h4>
+              <p className="card-desc">{canceledCount} Dibatalkan</p>
             </div>
           </div>
         </div>

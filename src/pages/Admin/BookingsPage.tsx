@@ -171,6 +171,7 @@ const BookingsPage = () => {
   const getStatusClass = (status: string) => {
     if (status === "Approved") return "status-approved";
     if (status === "Rejected") return "status-rejected";
+    if (status === "Canceled") return "status-canceled";
     return "status-pending";
   };
 
@@ -210,6 +211,7 @@ const BookingsPage = () => {
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
           <option value="Rejected">Rejected</option>
+          <option value="Canceled">Canceled</option>
         </select>
 
         {statusFilter && (
@@ -317,6 +319,15 @@ const BookingsPage = () => {
                             cancel
                           </span>
                         )}
+                        {b.status === "Canceled" && (
+                          <span
+                            className="material-symbols-outlined"
+                            style={{ fontSize: "14px" }}
+                          >
+                            block
+                          </span>
+                        )}
+                        {}
                         {b.status}
                       </div>
                     </td>
@@ -335,7 +346,7 @@ const BookingsPage = () => {
                           </span>
                         </button>
 
-                        {b.status !== "Approved" && (
+                        {b.status !== "Approved" && b.status !== "Canceled" && (
                           <button
                             className="btn-action btn-approve"
                             title="Setujui"
@@ -347,7 +358,7 @@ const BookingsPage = () => {
                           </button>
                         )}
 
-                        {b.status !== "Rejected" && (
+                        {b.status !== "Rejected" && b.status !== "Canceled" && (
                           <button
                             className="btn-action btn-reject"
                             title="Tolak"

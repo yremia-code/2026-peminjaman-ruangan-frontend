@@ -98,6 +98,20 @@ const UserDashboard = () => {
     setIsBookingOpen(true);
   };
 
+  const handleCancelBooking = async (bookingId: number) => {
+    if (!window.confirm("Apakah Anda yakin ingin membatalkan peminjaman ini?"))
+      return;
+
+    try {
+      await bookingService.updateStatus(bookingId, "Canceled");
+      alert("Peminjaman berhasil dibatalkan.");
+      fetchData(userId!);
+    } catch (error) {
+      console.error("Gagal membatalkan peminjaman", error);
+      alert("Gagal membatalkan peminjaman.");
+    }
+  };
+
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("id-ID", {
       day: "numeric",
@@ -111,6 +125,8 @@ const UserDashboard = () => {
       return { bg: "#ecfdf5", color: "#047857", border: "#a7f3d0" };
     if (status === "Rejected")
       return { bg: "#fef2f2", color: "#dc2626", border: "#fee2e2" };
+    if (status === "Canceled")
+      return { bg: "#f3f4f6", color: "#374151", border: "#d1d5db" };
     return { bg: "#fff7ed", color: "#ea580c", border: "#ffedd5" };
   };
 
@@ -227,11 +243,26 @@ const UserDashboard = () => {
                       >
                         {h.status}
                       </div>
+                      
                     </div>
                     <div className="h-date">
                       {formatDate(h.tanggalPinjam)} -{" "}
                       {formatDate(h.tanggalSelesai)}
                     </div>
+                    {h.status === "Pending" && (
+                        <button
+                          style={{
+                          marginTop: '8px', width: '100%', padding: '6px', fontSize: '0.75rem',
+                          background: '#fff', border: '1px solid #cbd5e1', borderRadius: '6px',
+                          cursor: 'pointer', color: '#64748b', fontWeight: '600'
+                        }}
+                          onClick={(e) =>{
+                            e.stopPropagation();
+                            handleCancelBooking(h.id);}}
+                        >
+                          Batalkan
+                        </button>
+                      )}
                   </div>
                 );
               })
