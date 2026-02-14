@@ -203,6 +203,8 @@ const BookingsPage = () => {
           className="filter-select"
           value={statusFilter}
           onChange={handleStatusFilterChange}
+          title="Filter Status Peminjaman"
+          aria-label="Filter Status Peminjaman"
         >
           <option value="">Semua Status</option>
           <option value="Pending">Pending</option>

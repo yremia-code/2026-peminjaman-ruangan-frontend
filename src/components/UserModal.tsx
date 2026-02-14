@@ -109,6 +109,8 @@ const UserModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value })
               }
+              title="Pilih Role User"
+              aria-label="Pilih Role User"
               className="filter-select"
               style={{ width: "100%" }}
             >

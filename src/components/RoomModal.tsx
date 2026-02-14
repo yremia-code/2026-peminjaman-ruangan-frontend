@@ -90,6 +90,8 @@ const RoomModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, kapasitas: Number(e.target.value) })
               }
+              title="Kapasitas Ruangan"
+              aria-label="Kapasitas Ruangan"
               required
             />
           </div>

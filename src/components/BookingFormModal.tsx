@@ -75,10 +75,14 @@ const BookingFormModal = ({ isOpen, onClose, room, userId, onSuccess }: BookingF
                         <div style={{ display: "flex", gap: "10px" }}>
                             <input type="date" required className="form-input"
                                 value={formData.tanggalPinjam}
+                                title="Tanggal Mulai Pinjam"
+                                aria-label="Tanggal Mulai Pinjam"
                                 onChange={(e) => setFormData({ ...formData, tanggalPinjam: e.target.value })}
                             />
                             <input type="time" required className="form-input"
                                 value={formData.jamPinjam}
+                                title="Jam Mulai Pinjam"
+                                aria-label="Jam Mulai Pinjam"
                                 onChange={(e) => setFormData({ ...formData, jamPinjam: e.target.value })}
                             />
                         </div>
@@ -89,10 +93,14 @@ const BookingFormModal = ({ isOpen, onClose, room, userId, onSuccess }: BookingF
                         <div style={{ display: "flex", gap: "10px" }}>
                             <input type="date" required className="form-input"
                                 value={formData.tanggalSelesai}
+                                title="Tanggal Selesai Pinjam"
+                                aria-label="Tanggal Selesai Pinjam"
                                 onChange={(e) => setFormData({ ...formData, tanggalSelesai: e.target.value })}
                             />
                             <input type="time" required className="form-input"
                                 value={formData.jamSelesai}
+                                title="Jam Selesai Pinjam"
+                                aria-label="Jam Selesai Pinjam"
                                 onChange={(e) => setFormData({ ...formData, jamSelesai: e.target.value })}
                             />
                         </div>

@@ -126,6 +126,8 @@ const BookingModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, userId: Number(e.target.value) })
               }
+              title="Pilih User"
+              aria-label="Pilih User"
               required
             >
               <option value={0}>-- Pilih User --</option>
@@ -146,6 +148,8 @@ const BookingModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, ruanganId: Number(e.target.value) })
               }
+              title="Pilih Ruangan"
+              aria-label="Pilih Ruangan"
               required
             >
               <option value={0}>-- Pilih Ruangan --</option>
@@ -166,6 +170,8 @@ const BookingModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, tanggalPinjam: e.target.value })
               }
+              title="Tanggal Mulai Pinjam"
+              aria-label="Tanggal Mulai Pinjam"
               required
             />
           </div>
@@ -179,6 +185,8 @@ const BookingModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, tanggalSelesai: e.target.value })
               }
+              title="Tanggal Selesai Pinjam"
+              aria-label="Tanggal Selesai Pinjam"
               required
               min={formData.tanggalPinjam}
             />
@@ -202,6 +210,8 @@ const BookingModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, status: e.target.value })
               }
+              title="Pilih Status Peminjaman"
+              aria-label="Pilih Status Peminjaman"
               disabled
             >
               <option value="Pending">⏳ Pending</option>

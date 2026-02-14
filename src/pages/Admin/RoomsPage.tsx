@@ -144,6 +144,8 @@ const RoomsPage = () => {
           className="filter-select"
           value={selectedGedung}
           onChange={handleGedungChange}
+          title="Filter Gedung"
+          aria-label="Filter Gedung"
         >
           <option value="">Semua Gedung</option>
           {uniqueGedung.map((g, idx) => (

@@ -106,7 +106,7 @@ const UsersPage = () => {
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div>
           <button className="btn-primary" onClick={handleOpenAdd}>
             <span className="material-symbols-outlined">person_add</span>
             Tambah User
@@ -127,6 +127,8 @@ const UsersPage = () => {
           className="filter-select"
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
+          title="Filter Tipe User"
+          aria-label="Filter Tipe User"
         >
           <option value="">Semua Role</option>
           <option value="Admin">Admin</option>
@@ -135,7 +137,7 @@ const UsersPage = () => {
       </div>
 
       {loading ? (
-        <div className="skeleton" style={{ height: "300px" }}></div>
+        <div className="skeleton"></div>
       ) : (
         <div className="table-card">
           <table className="data-table">
@@ -173,13 +175,9 @@ const UsersPage = () => {
                     </td>
                     <td>
                       <span
-                        style={{
-                          color: "#16a34a",
-                          fontWeight: 600,
-                          fontSize: "0.85rem",
-                        }}
+                        className="status-online status-pill"
                       >
-                        ● Aktif
+                        Aktif
                       </span>
                     </td>
                     <td>
@@ -191,7 +189,6 @@ const UsersPage = () => {
                         >
                           <span
                             className="material-symbols-outlined"
-                            style={{ fontSize: "18px" }}
                           >
                             edit
                           </span>
@@ -203,7 +200,6 @@ const UsersPage = () => {
                         >
                           <span
                             className="material-symbols-outlined"
-                            style={{ fontSize: "18px" }}
                           >
                             delete
                           </span>
