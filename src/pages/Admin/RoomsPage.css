@@ -1,0 +1,42 @@
+.room-name {
+  font-weight: 700;
+  color: var(--primary-dark);
+  font-size: 0.95rem;
+}
+.room-building {
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.capacity-badge {
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: inline-block;
+}
+
+.btn-edit {
+  background: #fff7ed;
+  color: #ea580c;
+  border-color: #ffedd5;
+}
+.btn-delete {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fee2e2;
+}
+
+.btn-edit:hover {
+  background: #ffedd5;
+  transform: translateY(-1px);
+}
+.btn-delete:hover {
+  background: #fee2e2;
+  transform: translateY(-1px);
+}

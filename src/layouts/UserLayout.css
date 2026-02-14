@@ -1,0 +1,21 @@
+.brand-tag {
+  font-size: 0.75rem;
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+}
+
+.user-footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-gray);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+  margin-top: auto;
+}
