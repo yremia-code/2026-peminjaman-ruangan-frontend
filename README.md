@@ -19,6 +19,9 @@ Aplikasi web frontend untuk sistem peminjaman ruangan kampus, dibangun menggunak
 2. Install dependencies:
    ```bash
    npm install
+   ```
 3. Copy .env.example menjadi .env dan sesuaikan url
 4. Jalankan server development:
+  ```bash
    npm run dev
+  ```
