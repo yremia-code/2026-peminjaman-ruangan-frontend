@@ -14,6 +14,7 @@ const UserDashboard = () => {
 
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [historyFilter, setHistoryFilter] = useState("");
 
   const [userId, setUserId] = useState<number | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Ruangan | null>(null);
@@ -83,6 +84,14 @@ const UserDashboard = () => {
     setFilteredRooms(result);
   }, [searchTerm, rooms]);
 
+  const filteredHistory = history.filter((h) => {
+    const keyword = historyFilter.toLowerCase();
+    const roomName = h.ruangan?.nama?.toLowerCase() || "";
+    const gedungName = h.ruangan?.gedung?.toLowerCase() || "";
+    const status = h.status.toLowerCase();
+    return roomName.includes(keyword) || gedungName.includes(keyword) || status.includes(keyword);
+  });
+
   const groupedRooms = filteredRooms.reduce(
     (acc, room) => {
       const group = room.gedung || "Lainnya";
@@ -101,7 +110,6 @@ const UserDashboard = () => {
   const handleCancelBooking = async (bookingId: number) => {
     if (!window.confirm("Apakah Anda yakin ingin membatalkan peminjaman ini?"))
       return;
-
     try {
       await bookingService.updateStatus(bookingId, "Canceled");
       alert("Peminjaman berhasil dibatalkan.");
@@ -164,7 +172,6 @@ const UserDashboard = () => {
                   <span className="material-symbols-outlined">apartment</span>{" "}
                   {gedung}
                 </div>
-
                 <div className="room-grid">
                   {roomsInGedung.map((room) => (
                     <div
@@ -221,11 +228,21 @@ const UserDashboard = () => {
             Peminjaman
           </div>
 
+          <div className="history-filter-box">
+            <input
+              type="text"
+              className="history-filter-input"
+              placeholder="Cari riwayat..."
+              value={historyFilter}
+              onChange={(e) => setHistoryFilter(e.target.value)}
+            />
+          </div>
+
           <div className="history-list">
             {loading ? (
               <div className="skeleton" style={{ height: "100px" }}></div>
-            ) : history.length > 0 ? (
-              history.map((h) => {
+            ) : filteredHistory.length > 0 ? (
+              filteredHistory.map((h) => {
                 const style = getStatusColor(h.status);
                 return (
                   <div key={h.id} className="history-item">
@@ -243,26 +260,22 @@ const UserDashboard = () => {
                       >
                         {h.status}
                       </div>
-                      
                     </div>
                     <div className="h-date">
                       {formatDate(h.tanggalPinjam)} -{" "}
                       {formatDate(h.tanggalSelesai)}
                     </div>
                     {h.status === "Pending" && (
-                        <button
-                          style={{
-                          marginTop: '8px', width: '100%', padding: '6px', fontSize: '0.75rem',
-                          background: '#fff', border: '1px solid #cbd5e1', borderRadius: '6px',
-                          cursor: 'pointer', color: '#64748b', fontWeight: '600'
+                      <button
+                        className="button-cancel-booking"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCancelBooking(h.id);
                         }}
-                          onClick={(e) =>{
-                            e.stopPropagation();
-                            handleCancelBooking(h.id);}}
-                        >
-                          Batalkan
-                        </button>
-                      )}
+                      >
+                        Batalkan
+                      </button>
+                    )}
                   </div>
                 );
               })
@@ -275,7 +288,7 @@ const UserDashboard = () => {
                   marginTop: "1rem",
                 }}
               >
-                Belum ada riwayat.
+                {historyFilter ? "Tidak ditemukan." : "Belum ada riwayat."}
               </p>
             )}
           </div>

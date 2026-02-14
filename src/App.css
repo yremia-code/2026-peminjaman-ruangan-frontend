@@ -97,6 +97,7 @@ body {
   padding: 4px 10px;
   border-radius: 99px;
   border: 1px solid transparent;
+  justify-content: center;
 }
 
 .status-online {
@@ -225,11 +226,11 @@ body {
 
 .profile-pill {
   background: var(--white);
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.3rem 0.25rem 0.6rem;
   border-radius: 99px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   border: 1px solid var(--border);
   cursor: default;
   transition: 0.2s;

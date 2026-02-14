@@ -33,28 +33,24 @@ const UserLayout = ({ children }: UserLayoutProps) => {
   return (
     <div className="layout-wrapper">
       {" "}
-      {/* SUDAH DIGANTI DARI user-layout-wrapper */}
       <nav className="layout-navbar">
         {" "}
-        {/* SUDAH DIGANTI DARI user-navbar */}
         <div
           className="navbar-section"
           style={{ width: "100%", justifyContent: "space-between" }}
         >
-          {/* Logo Kiri */}
           <Link to="/user" className="layout-brand">
             SPR PENS <span className="brand-tag">Student</span>
           </Link>
 
-          {/* Menu Kanan */}
           <div className="navbar-section" style={{ gap: "1rem" }}>
             <div className="profile-pill">
-              <div className="avatar-circle">
-                {user.nama.charAt(0).toUpperCase()}
-              </div>
               <div className="profile-info">
                 <div className="profile-name">{user.nama}</div>
                 <div className="profile-role">{user.role}</div>
+              </div>
+              <div className="avatar-circle">
+                {user.nama.charAt(0).toUpperCase()}
               </div>
             </div>
 
