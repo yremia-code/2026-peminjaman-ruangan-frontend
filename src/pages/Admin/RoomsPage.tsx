@@ -22,6 +22,7 @@ const RoomsPage = () => {
     setLoading(true);
     try {
       const data = await roomService.getAll();
+      data.sort((a, b) => a.nama.localeCompare(b.nama));
       setRooms(data);
       setFilteredRooms(data);
     } catch (error) {

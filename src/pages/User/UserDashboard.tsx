@@ -44,6 +44,7 @@ const UserDashboard = () => {
         bookingService.getAll(),
       ]);
 
+      roomsData.sort((a, b) => a.nama.localeCompare(b.nama));
       setRooms(roomsData);
       setFilteredRooms(roomsData);
 
